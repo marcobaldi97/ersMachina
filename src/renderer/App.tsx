@@ -1,50 +1,35 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
+import React, { useEffect, useState } from 'react';
+
+import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
+
+import Layout from 'antd/lib/layout/layout';
+import AppSider from './components/AppSider';
+import CompanyPage from './pages/company/CompanyPage';
+import EmployeePage from './pages/employee/EmployeePage';
+
 import './App.css';
 
-const Hello = () => {
-  return (
-    <div>
-      <div className="Hello">
-        <img width="200px" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
-    </div>
-  );
-};
-
 export default function App() {
+  const mainPage = () => {
+    return <div />;
+  };
+
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Hello />} />
-      </Routes>
+      <Switch>
+        <Layout className="site-layout">
+          <AppSider />
+          <div className="appContent">
+            <Route path="/">{mainPage()}</Route>
+            <Route path="/company">
+              <CompanyPage />
+            </Route>
+            <Route path="/employee">
+              <EmployeePage />
+            </Route>
+          </div>
+        </Layout>
+      </Switch>
     </Router>
   );
 }

@@ -164,10 +164,12 @@
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@types/jest": "^27.0.3",
-    "@types/node": "17.0.5",
+    "@types/node": "^17.0.5",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
+    "@types/react-router-dom": "^5.3.2",
     "@types/react-test-renderer": "^17.0.1",
+    "@types/sql.js": "^1.4.3",
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/webpack-env": "^1.16.3",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
@@ -226,14 +228,16 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "antd": "^4.18.2",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.4",
     "electron-updater": "^4.6.4",
     "history": "^5.2.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-router-dom": "^6.2.1",
-    "regenerator-runtime": "^0.13.9"
+    "react-router-dom": "5.3.0",
+    "regenerator-runtime": "^0.13.9",
+    "sql.js": "^1.6.2"
   },
   "devEngines": {
     "node": ">=14.x",
