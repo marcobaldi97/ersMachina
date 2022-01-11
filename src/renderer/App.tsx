@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+import DataStore from 'core/DataStore';
+
 import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 
 import Layout from 'antd/lib/layout/layout';
@@ -10,26 +12,28 @@ import EmployeePage from './pages/employee/EmployeePage';
 import './App.css';
 
 export default function App() {
+  const dataStore = DataStore.getInstance();
+
   const mainPage = () => {
     return <div />;
   };
 
   return (
-    <Router>
-      <Switch>
-        <Layout className="site-layout">
-          <AppSider />
-          <div className="appContent">
-            <Route path="/">{mainPage()}</Route>
+    <Layout className="site-layout">
+      <Router>
+        <AppSider />
+        <div className="appContent">
+          <Switch>
             <Route path="/company">
               <CompanyPage />
             </Route>
             <Route path="/employee">
               <EmployeePage />
             </Route>
-          </div>
-        </Layout>
-      </Switch>
-    </Router>
+            <Route path="/">{mainPage()}</Route>
+          </Switch>
+        </div>
+      </Router>
+    </Layout>
   );
 }
