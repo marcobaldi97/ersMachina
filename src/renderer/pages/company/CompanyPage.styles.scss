@@ -1,0 +1,29 @@
+.listItem:hover {
+  background-color: rgba(185, 177, 177, 0.548);
+  font-weight: bold;
+}
+
+.editDeleteButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  .deleteButton {
+    padding: 5px;
+
+    &:hover {
+      background-color: red;
+
+      border-radius: 50%;
+    }
+  }
+  .editButton {
+    padding: 5px;
+
+    &:hover {
+      background-color: green;
+
+      border-radius: 50%;
+    }
+  }
+}

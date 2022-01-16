@@ -6,10 +6,13 @@ import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 
 import Layout from 'antd/lib/layout/layout';
 import AppSider from './components/AppSider';
+import Company from './components/Company/Company';
 import CompanyPage from './pages/company/CompanyPage';
 import EmployeePage from './pages/employee/EmployeePage';
 
 import './App.css';
+import TestPage from './pages/tester/TestPage';
+import Employee from './components/Employee/Employee';
 
 export default function App() {
   const dataStore = DataStore.getInstance();
@@ -24,12 +27,30 @@ export default function App() {
         <AppSider />
         <div className="appContent">
           <Switch>
-            <Route path="/company">
+            <Route path="/companies">
               <CompanyPage />
             </Route>
-            <Route path="/employee">
+
+            <Route path="/company/:paramName">
+              <Company />
+            </Route>
+
+            <Route path="/employees">
               <EmployeePage />
             </Route>
+
+            <Route path="/employee">
+              <Employee />
+            </Route>
+
+            <Route path="/newCompany">
+              <Company />
+            </Route>
+
+            <Route path="/test">
+              <TestPage />
+            </Route>
+
             <Route path="/">{mainPage()}</Route>
           </Switch>
         </div>

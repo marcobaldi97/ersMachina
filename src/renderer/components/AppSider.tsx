@@ -14,14 +14,19 @@ export default function AppSider() {
         defaultOpenKeys={['sub1']}
         style={{ height: '100%', borderRight: 0 }}
       >
-        <SubMenu key="sub1" title="Empresa">
+        <SubMenu key="sub1" title="Administracion">
           <Menu.Item key="1">
-            <Link to="/company">Datos empresa</Link>
+            <Link to="/companies">Empresas</Link>
           </Menu.Item>
           <Menu.Item key="2">
-            <Link to="/employee">Datos empleado</Link>
+            <Link to="/employees">Empleados</Link>
           </Menu.Item>
         </SubMenu>
+        {false && (
+          <Menu.Item key="3">
+            <Link to="/test">Test</Link>
+          </Menu.Item>
+        )}
       </Menu>
     </Sider>
   );
