@@ -1,8 +1,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { Menu } from 'antd';
+import React from 'react';
+import { BulbFilled, BulbOutlined } from '@ant-design/icons';
+import { Menu, Switch } from 'antd';
 import Sider from 'antd/lib/layout/Sider';
 import SubMenu from 'antd/lib/menu/SubMenu';
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 export default function AppSider() {
@@ -27,6 +28,12 @@ export default function AppSider() {
             <Link to="/test">Test</Link>
           </Menu.Item>
         )}
+        <Switch
+          checkedChildren={<BulbOutlined />}
+          unCheckedChildren={<BulbFilled />}
+          defaultChecked
+          onClick={() => {}}
+        />
       </Menu>
     </Sider>
   );

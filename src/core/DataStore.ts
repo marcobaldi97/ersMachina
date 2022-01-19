@@ -27,7 +27,6 @@ export default class DataStore {
 
   private dataBase;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {
     this.dataBase = new sqlite3.Database('db.sql');
 
@@ -57,6 +56,7 @@ export default class DataStore {
     return DataStore.instance;
   }
 
+  // #region Fetching methods.
   async fetchEmployees(companyName?: string): Promise<EmployeeInterface[]> {
     return new Promise((resolve, reject) => {
       this.dataBase.all(
@@ -111,6 +111,22 @@ export default class DataStore {
     });
   }
 
+  async fetchEmployee(paramCi: string): Promise<EmployeeInterface> {
+    return new Promise<EmployeeInterface>((resolve, reject) => {
+      this.dataBase.get(
+        `SELECT * FROM employee WHERE ci = ${paramCi}`,
+        (err: any, row: any) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(row);
+        }
+      );
+    });
+  }
+  // #endregion
+
+  // #region Adding methods.
   async addCompany(props: CompanyInterface) {
     const { name, rut, address, mtssNumber, cgroup, subgroup } = props;
     return new Promise<void>((resolve, reject) => {
@@ -148,7 +164,9 @@ export default class DataStore {
       );
     });
   }
+  // #endregion
 
+  // #region Updating methods.
   async updateEmployee(
     ci: number,
     name: string,
@@ -181,8 +199,10 @@ export default class DataStore {
     subgroup: number
   ) {
     return new Promise<void>((resolve, reject) => {
+      console.log(name, rut, address, mtssNumber, group, subgroup);
+
       this.dataBase.run(
-        `UPDATE company SET rut = ${rut}, address="${address}", mtssNumber = ${mtssNumber}, cgroup = ${group}, subgroup = ${subgroup} WHERE name = "${name}"`,
+        `UPDATE company SET rut=${rut}, address = "${address}", mtssNumber = ${mtssNumber}, cgroup = ${group}, subgroup = ${subgroup} WHERE name="${name}"`,
         (err: any) => {
           if (err) {
             reject(err);
@@ -192,7 +212,9 @@ export default class DataStore {
       );
     });
   }
+  // #endregion
 
+  // #region Deleting methods.
   async deleteEmployee(ci: string, companyName: string) {
     return new Promise<void>((resolve, reject) => {
       this.dataBase.run(
@@ -220,4 +242,5 @@ export default class DataStore {
       );
     });
   }
+  // #endregion
 }

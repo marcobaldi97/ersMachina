@@ -6,7 +6,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { Button, Spin, Table } from 'antd';
 import Layout from 'antd/lib/layout/layout';
 import DataStore, { EmployeeInterface } from 'core/DataStore';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 export interface EmployeePageProps {}
 
@@ -14,6 +14,8 @@ export default function EmployeePage(props: EmployeePageProps) {
   const dataStore = DataStore.getInstance();
 
   const [employees, setEmployees] = useState<EmployeeInterface[]>([]);
+  const [redirectEditEmployee, setRedirectEditEmployee] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeInterface>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,8 +27,6 @@ export default function EmployeePage(props: EmployeePageProps) {
 
     fetchData();
   }, []);
-
-  const columns = {};
 
   /**
    *ci: number;
@@ -42,7 +42,18 @@ export default function EmployeePage(props: EmployeePageProps) {
   return (
     <Layout className="site-layout">
       <Suspense fallback={<Spin size="large" />}>
-        <Table dataSource={employees}>
+        <Table
+          dataSource={employees}
+          onRow={(record) => {
+            return {
+              onDoubleClick: () => {
+                setSelectedEmployee(record);
+
+                setRedirectEditEmployee(true);
+              },
+            };
+          }}
+        >
           <Table.Column title="CI" dataIndex="ci" key="ci" />
           <Table.Column title="Nombre" dataIndex="name" key="name" />
           <Table.Column
@@ -68,9 +79,16 @@ export default function EmployeePage(props: EmployeePageProps) {
           />
           <Table.Column title="FONASA" dataIndex="fonasa" key="fonasa" />
         </Table>
+
         <Button>
           <Link to="/employee">➕</Link>
         </Button>
+
+        {redirectEditEmployee && selectedEmployee && (
+          <Redirect
+            to={`/employee/${selectedEmployee.ci}/${selectedEmployee.companyName}`}
+          />
+        )}
       </Suspense>
     </Layout>
   );

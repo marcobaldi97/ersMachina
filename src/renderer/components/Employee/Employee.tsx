@@ -12,23 +12,22 @@ import {
 } from 'antd';
 import Layout from 'antd/lib/layout/layout';
 import locale from 'antd/lib/date-picker/locale/es_ES';
-import DataStore from 'core/DataStore';
-import { Redirect } from 'react-router-dom';
+import DataStore, { EmployeeInterface } from 'core/DataStore';
+import { Redirect, useParams } from 'react-router-dom';
+
+import './Employee.styles.scss';
 
 type SizeType = Parameters<typeof Form>[0]['size'];
 
-export interface EmployeeProps {
-  companyNameParam?: string;
-  ciParam?: number;
-}
-
-export default function Employee(props: EmployeeProps) {
-  const { ciParam, companyNameParam } = props;
-
+export default function Employee(props: any) {
   const dataStore = DataStore.getInstance();
 
-  const [companyName, setCompanyName] = useState(companyNameParam ?? '');
-  const [ci, setCi] = useState(ciParam ?? 0);
+  // eslint-disable-next-line react/destructuring-assignment
+  const { paramCompanyName, paramCi } =
+    useParams<{ paramCompanyName: string; paramCi: string }>();
+
+  const [companyName, setCompanyName] = useState(paramCompanyName ?? '');
+  const [ci, setCi] = useState(Number.parseInt(paramCi, 10) ?? 0);
   const [name, setName] = useState('');
   const [position, setPosition] = useState('');
   const [entryDate, setEntryDate] = useState(''); // the date is in the formar dd/mm/yyyy
@@ -38,15 +37,42 @@ export default function Employee(props: EmployeeProps) {
   const [companiesNames, setCompaniesNames] = useState<string[]>([]);
   const [redirect, setRedirect] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const companies = await dataStore.fetchCompaniesNames();
-      setCompaniesNames(companies);
-    };
+  const [employeeData, setEmployeeData] = useState<EmployeeInterface>();
 
-    fetchData();
+  useEffect(() => {
+    if (paramCi) {
+      const fetchData = async () => {
+        const fetchedEmployeeData: EmployeeInterface =
+          await dataStore.fetchEmployee(paramCi);
+
+        setEmployeeData(fetchedEmployeeData);
+      };
+
+      fetchData();
+    } else {
+      const fetchData = async () => {
+        const companies = await dataStore.fetchCompaniesNames();
+        setCompaniesNames(companies);
+      };
+      fetchData();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    console.log('Hi!');
+
+    if (employeeData) {
+      console.log('Mark');
+
+      setName(employeeData.name);
+      setPosition(employeeData.position);
+      setEntryDate(employeeData.entryDate);
+      setBpsAfiliationNumber(employeeData.bpsAfiliationNumber);
+      setNominalSalary(employeeData.nominalSalary);
+      setFonasa(employeeData.fonasa);
+    }
+  }, [employeeData]);
 
   // #region form stuff
   const [componentSize, setComponentSize] = useState<SizeType | 'default'>(
@@ -56,6 +82,8 @@ export default function Employee(props: EmployeeProps) {
     setComponentSize(size);
   };
   // #endregion
+
+  // #region Handlers
   async function handleAdd() {
     await dataStore.addEmployee(
       ci,
@@ -67,7 +95,6 @@ export default function Employee(props: EmployeeProps) {
       nominalSalary,
       fonasa
     );
-    console.log('added');
 
     setRedirect(true);
   }
@@ -85,13 +112,14 @@ export default function Employee(props: EmployeeProps) {
     );
     setRedirect(true);
   }
+  // #endregion
 
   return (
-    <Layout className="">
+    <Layout className="EmployeeContainer">
       <h1>Datos empleado:</h1>
       <Suspense fallback={<Spin size="large" />}>
         <Form
-          className=""
+          className="EmployeeForm"
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 14 }}
           layout="horizontal"
@@ -100,7 +128,7 @@ export default function Employee(props: EmployeeProps) {
           size={componentSize as SizeType}
         >
           <Form.Item label="CI:">
-            {ciParam ? (
+            {paramCi ? (
               <InputNumber value={ci} disabled />
             ) : (
               <InputNumber onChange={(e: number) => setCi(e)} />
@@ -108,26 +136,28 @@ export default function Employee(props: EmployeeProps) {
           </Form.Item>
 
           <Form.Item label="Empresa:">
-            {!companyNameParam && (
-              <Select value={companyName} onChange={(e) => setCompanyName(e)}>
-                {companiesNames.map((companyNameValue: string) => (
-                  <Select.Option
-                    key={companyNameValue}
-                    value={companyNameValue}
-                  >
-                    {companyNameValue}
-                  </Select.Option>
-                ))}
-              </Select>
-            )}
+            <Select
+              value={companyName}
+              onChange={(e) => setCompanyName(e)}
+              disabled={!!paramCompanyName}
+            >
+              {companiesNames.map((companyNameValue: string) => (
+                <Select.Option key={companyNameValue} value={companyNameValue}>
+                  {companyNameValue}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item label="Nombre empleado:">
-            <Input onChange={(e) => setName(e.target.value)} />
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
           </Form.Item>
 
           <Form.Item label="Posicion:">
-            <Input onChange={(e) => setPosition(e.target.value)} />
+            <Input
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+            />
           </Form.Item>
 
           <Form.Item label="Fecha ingreso:">
@@ -142,21 +172,27 @@ export default function Employee(props: EmployeeProps) {
           </Form.Item>
 
           <Form.Item label="Numero afiliacion BPS:">
-            <InputNumber onChange={(e: number) => setBpsAfiliationNumber(e)} />
+            <InputNumber
+              value={bpsAfiliationNumber}
+              onChange={(e: number) => setBpsAfiliationNumber(e)}
+            />
           </Form.Item>
 
           <Form.Item label="Salario Nominal:">
-            <InputNumber onChange={(e: number) => setNominalSalary(e)} />
+            <InputNumber
+              value={nominalSalary}
+              onChange={(e: number) => setNominalSalary(e)}
+            />
           </Form.Item>
 
           <Form.Item label="Fonasa:">
-            <Input onChange={(e) => setFonasa(e.target.value)} />
+            <Input value={fonasa} onChange={(e) => setFonasa(e.target.value)} />
           </Form.Item>
 
           <Form.Item
             style={{ display: 'flex', justifyContent: 'center', width: '100%' }}
           >
-            {ciParam ? (
+            {paramCi ? (
               <Button id="submitButton" onClick={() => handleEdit()}>
                 Editar
               </Button>

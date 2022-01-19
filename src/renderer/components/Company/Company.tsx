@@ -1,12 +1,10 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 
-import { Button, Form, Input, InputNumber } from 'antd';
+import { Button, Spin, Form, Input, InputNumber } from 'antd';
 import Layout from 'antd/lib/layout/layout';
-import DataStore, { CompanyInterface } from 'core/DataStore';
-import { NavLink, Redirect, useParams } from 'react-router-dom';
-
-type SizeType = Parameters<typeof Form>[0]['size'];
+import DataStore from 'core/DataStore';
+import { Redirect, useParams } from 'react-router-dom';
 
 export default function Company(props: any) {
   const dataStore = DataStore.getInstance();
@@ -24,6 +22,8 @@ export default function Company(props: any) {
     const fetchData = async (nameParam: string) => {
       const company = await dataStore.getCompany(nameParam);
 
+      console.dir(company);
+
       setCompanyName(company.name);
       setaddress(company.address);
       setRut(company.rut);
@@ -32,17 +32,11 @@ export default function Company(props: any) {
       setsubgroup(company.subgroup);
     };
 
-    if (paramName) fetchData(paramName);
+    if (paramName) {
+      fetchData(paramName);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const [componentSize, setComponentSize] = useState<SizeType | 'default'>(
-    'default'
-  );
-
-  const onFormLayoutChange = ({ size }: { size: SizeType }) => {
-    setComponentSize(size);
-  };
 
   async function handleEdit() {
     await dataStore.updateCompany(
@@ -59,6 +53,7 @@ export default function Company(props: any) {
   async function handleAdd() {
     const name = companyName;
     const cgroup = group;
+
     await dataStore.addCompany({
       name,
       rut,
@@ -73,66 +68,54 @@ export default function Company(props: any) {
   return (
     <Layout className="Company">
       <h1>Datos empresa:</h1>
-      <Form
-        className="companyForm"
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 14 }}
-        layout="horizontal"
-        initialValues={{ size: componentSize }}
-        onValuesChange={onFormLayoutChange}
-        size={componentSize as SizeType}
-      >
-        <Form.Item label="Nombre empresa">
-          {paramName ? (
-            <Input value={paramName} disabled />
-          ) : (
+      <Suspense fallback={<Spin size="large" />}>
+        <Form>
+          <Form.Item label="Nombre">
             <Input
+              type="text"
               value={companyName}
-              onChange={(event) => setCompanyName(event.target.value)}
+              onChange={(e) => setCompanyName(e.target.value)}
             />
-          )}
-        </Form.Item>
+          </Form.Item>
 
-        <Form.Item label="Dirección:">
-          <Input
-            value={address}
-            onChange={(event) => setaddress(event.target.value)}
-          />
-        </Form.Item>
+          <Form.Item label="Rut">
+            <InputNumber value={rut} onChange={(value) => setRut(value)} />
+          </Form.Item>
 
-        <Form.Item label="Rut:">
-          <InputNumber value={rut} onChange={(value) => setRut(value)} />
-        </Form.Item>
+          <Form.Item label="Dirección">
+            <Input
+              type="text"
+              value={address}
+              onChange={(e) => setaddress(e.target.value)}
+            />
+          </Form.Item>
 
-        <Form.Item label="Numero mtss:">
-          <InputNumber
-            value={mtssNumber}
-            onChange={(value) => setMtssNumber(value)}
-          />
-        </Form.Item>
+          <Form.Item label="Número MTSS">
+            <InputNumber
+              value={mtssNumber}
+              onChange={(value) => setMtssNumber(value)}
+            />
+          </Form.Item>
 
-        <Form.Item label="Grupo:">
-          <InputNumber value={group} onChange={(value) => setgroup(value)} />
-        </Form.Item>
+          <Form.Item label="Grupo">
+            <InputNumber value={group} onChange={(value) => setgroup(value)} />
+          </Form.Item>
 
-        <Form.Item label="Sub Grupo:">
-          <InputNumber
-            value={subgroup}
-            onChange={(value) => setsubgroup(value)}
-          />
-        </Form.Item>
+          <Form.Item label="Subgrupo">
+            <InputNumber
+              value={subgroup}
+              onChange={(value) => setsubgroup(value)}
+            />
+          </Form.Item>
 
-        <Form.Item
-          style={{ display: 'flex', justifyContent: 'center', width: '100%' }}
-        >
           <Button
             id="submitButton"
             onClick={() => (paramName ? handleEdit() : handleAdd())}
           >
             {paramName ? 'Editar' : 'Agregar'}
           </Button>
-        </Form.Item>
-      </Form>
+        </Form>
+      </Suspense>
       {redirect && <Redirect to="/companies" />}
     </Layout>
   );

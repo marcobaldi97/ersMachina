@@ -15,8 +15,6 @@ import TestPage from './pages/tester/TestPage';
 import Employee from './components/Employee/Employee';
 
 export default function App() {
-  const dataStore = DataStore.getInstance();
-
   const mainPage = () => {
     return <div />;
   };
@@ -31,17 +29,16 @@ export default function App() {
               <CompanyPage />
             </Route>
 
-            <Route path="/company/:paramName">
-              <Company />
-            </Route>
+            <Route path="/company/:paramName" component={Company} />
 
             <Route path="/employees">
               <EmployeePage />
             </Route>
 
-            <Route path="/employee">
-              <Employee />
-            </Route>
+            <Route
+              path="/employee/:paramCi/:paramCompanyName"
+              component={Employee}
+            />
 
             <Route path="/newCompany">
               <Company />
