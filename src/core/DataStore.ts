@@ -1,4 +1,5 @@
 import * as sqlite3 from 'sqlite3';
+import * as excelJs from 'exceljs';
 
 export interface CompanyInterface {
   name: string;
@@ -243,4 +244,52 @@ export default class DataStore {
     });
   }
   // #endregion
+
+  // #region Print to Excel Methods
+  async printEveryPaycheck(date: Date) {
+    try {
+      const companies = await this.fetchCompanies();
+
+      companies.forEach(async (company) => {
+        const employees = await this.fetchEmployees(company.name);
+        employees.forEach(async (employee) => {
+          const workbook = new excelJs.Workbook();
+          console.log('ping');
+          await workbook.xlsx.readFile('paychekTemplate.xlsx');
+          console.log('pong');
+          const workSheet = workbook.getWorksheet(0);
+
+          workSheet.getCell('F4').value = employee.ci;
+          workSheet.getCell('B4').value = employee.name;
+          workSheet.getCell('B5').value = employee.position;
+          workSheet.getCell('G5').value = employee.entryDate;
+          workSheet.getCell('B6').value = employee.bpsAfiliationNumber;
+          workSheet.getCell('E10').value = employee.nominalSalary;
+          workSheet.getCell('D13').value = employee.fonasa;
+
+          workSheet.getCell('F6').value = company.rut;
+          workSheet.getCell('A1').value = company.name;
+          workSheet.getCell('A2').value = company.address;
+          workSheet.getCell('B7').value = company.mtssNumber;
+          workSheet.getCell('D7').value = company.cgroup;
+          workSheet.getCell('F7').value = company.subgroup;
+
+          const currentDate = `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`;
+
+          workSheet.getCell('G1').value = currentDate;
+          workSheet.getCell('E2').value = `${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`;
+
+          await workbook.xlsx.writeFile(
+            `./recibos/${company.name}/${employee.name}-${currentDate}.xlsx`
+          );
+        });
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }

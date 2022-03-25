@@ -14,6 +14,7 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import DataStore from 'core/DataStore';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -33,6 +34,12 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
+ipcMain.on('getDataStoreInstance', async (event, arg) => {
+  console.log('Hi megan!');
+  event.reply('getDataStoreInstance', DataStore.getInstance());
+});
+
+// #region Config and Stuff
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -113,7 +120,7 @@ const createWindow = async () => {
   // eslint-disable-next-line
   new AppUpdater();
 };
-
+// #endregion
 /**
  * Add event listeners...
  */

@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from 'react';
-
-import DataStore from 'core/DataStore';
-
+import React from 'react';
 import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
 
 import Layout from 'antd/lib/layout/layout';
